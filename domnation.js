@@ -29,7 +29,7 @@ function Domnation(mapElement)
 		var d = $(dest).data();
 		for (var i = s.i - 1; i <= s.i + 1; i++) {
 			for (var j = s.j - 1; j <= s.j + 1; j++) {
-				if (d.i == i && d.j == j) {
+				if (d.i === i && d.j === j) {
 					return true;
 				}
 			}
@@ -83,7 +83,7 @@ function Domnation(mapElement)
 			"font-family": "monospace",
 			"text-align": "right",
 			"vertical-align": "top",
-			"background-color": "transparent",
+			"background-color": "transparent"
 		});
 		
 		refresh();
@@ -102,14 +102,14 @@ function Domnation(mapElement)
 			"width": "32px",
 			"height": "32",
 			"margin": "0px",
-			"padding": "0px",
+			"padding": "0px"
 		});
 		
 		$(mapElement).children(".pos").each(function(index) {
 			var $this = $(this);
 			var data = $this.data();
 			//console.log("-- refresh on: " + data.i + ", " + data.j + ", owner = " + data.owner + " --");
-			if (data.owner != BLOCKED && !data.army) {
+			if (data.owner !== BLOCKED && !data.army) {
 				data.owner = VACANT;
 			}
 			
@@ -144,9 +144,7 @@ function Domnation(mapElement)
 				for (var i = sdata.i - 1, j = sdata.i + 1; i <= j; i++) {
 					for (var m = sdata.j - 1, n = sdata.j + 1; m <= n; m++) {
 						var $adjacent = getPos(i, m);
-						if ($adjacent.data() && 
-							($adjacent.data().owner == VACANT || 
-							$adjacent.data().owner == currentPlayer)) {
+						if ($adjacent.data() && ($adjacent.data().owner === VACANT || $adjacent.data().owner === currentPlayer)) {
 							$adjacent.css("border", "1px solid yellow");
 						}
 					}
@@ -175,18 +173,18 @@ function Domnation(mapElement)
 		console.log("-- click on: " + d.i + ", " + d.j + ", owner = " + d.owner + " --");
 		if (source) {
 			console.log("source is " + s.i + ", " + s.j + " --");
-			if (source == this) {
+			if (source === this) {
 				source = null;
 			} else if (isAdjacent(source, this)) {
 				console.log("destination is adjacent");
-				if (d.owner == currentPlayer) {
+				if (d.owner === currentPlayer) {
 					console.log("destination (adjacent) belongs to the current player");
 					d.army += s.army - 1;
 					s.army = 1;
 					source = this;
-				} else if (d.owner == BLOCKED) {
+				} else if (d.owner === BLOCKED) {
 					// do nothing
-				} else if (d.owner == VACANT) {
+				} else if (d.owner === VACANT) {
 					console.log("destination is vacant");
 					if (s.army > 1) {
 						console.log("moving army");
@@ -201,7 +199,7 @@ function Domnation(mapElement)
 				} else {
 					console.log("destinastion is enemy territory");
 					// Attack
-					if (d.army == s.army) {
+					if (d.army === s.army) {
 						console.log("armies are equivalent");
 						d.army = s.army = 0;
 						source = null;
@@ -218,14 +216,14 @@ function Domnation(mapElement)
 						source = null;
 					}
 				}
-			} else if (d.owner == currentPlayer) {
+			} else if (d.owner === currentPlayer) {
 				console.log("destination (not adjacent) belongs to the current player");
 				source = this;
 			} else {
 				console.log("destination is not adjacent");
 				source = null;
 			}
-		} else if (d.owner == currentPlayer) {
+		} else if (d.owner === currentPlayer) {
 			console.log("new source");
 			source = this;
 		}
@@ -233,16 +231,16 @@ function Domnation(mapElement)
 	});
 
 	domnation.endTurn = function() {
-		if (currentPlayer == GREEN_ARMY) {
-			$(mapElement).children(".pos").each(function(index) {
+		if (currentPlayer === GREEN_ARMY) {
+			$(mapElement).children(".pos").each(function() {
 				var data = $(this).data();
-				if (data.owner == BROWN_ARMY || data.owner == GREEN_ARMY) {
+				if (data.owner === BROWN_ARMY || data.owner === GREEN_ARMY) {
 					data.army += data.inc;
 				}
 			});
 		}
 		source = null;
-		currentPlayer = currentPlayer == BROWN_ARMY ? GREEN_ARMY : BROWN_ARMY;
+		currentPlayer = currentPlayer === BROWN_ARMY ? GREEN_ARMY : BROWN_ARMY;
 		refresh();
 	};
 	
@@ -256,7 +254,7 @@ function Domnation(mapElement)
 	};
 	
 	domnation.getCurrentPlayerName = function() {
-		return currentPlayer == BROWN_ARMY ? "Brown Army" : "Green Army";
+		return currentPlayer === BROWN_ARMY ? "Brown Army" : "Green Army";
 	};
 	
 	setUp();
