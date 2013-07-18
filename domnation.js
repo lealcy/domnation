@@ -11,6 +11,7 @@ function Domnation(mapElement)
                 "B.0.....0.G\n" +
                 "...22.22...";
 
+    var INVALID = -1;
 	var VACANT = 0;
 	var BROWN_ARMY = 1;
 	var GREEN_ARMY = 2;
@@ -148,16 +149,17 @@ function Domnation(mapElement)
 				for (var i = sdata.i - 1, j = sdata.i + 1; i <= j; i++) {
 					for (var m = sdata.j - 1, n = sdata.j + 1; m <= n; m++) {
 						var $adjacent = getPos(i, m);
-						if ($adjacent.data() && ($adjacent.data().owner === VACANT || $adjacent.data().owner === currentPlayer)) {
+                        var owner = $adjacent.data() ? $adjacent.data().owner : INVALID;
+                        if (owner === VACANT || owner === currentPlayer) {
 							$adjacent.css("border", "1px solid yellow");
-						}
+						} else if (owner !== INVALID && owner !== BLOCKED) {
+							$adjacent.css("border", "1px solid red");
+                        }
 					}
 				}
 			}
-			$(source).css("border", "1px solid red");
+			$(source).css("border", "1px solid " + (currentPlayer === BROWN_ARMY ? "brown" : "green"));
 		}
-		
-		
 		
 		if (!hasBrownArmy && !hasGreenArmy) {
 			alert("Draw game!");
