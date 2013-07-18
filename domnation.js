@@ -18,6 +18,10 @@ function Domnation(mapElement)
 	var source = null;
 	var currentPlayer = null;
 	var customMap = null;
+    var lastPos = {
+        BROWN_ARMY:  null,
+        GREEN_ARMY: null
+    };
 
 	function getPos(i, j)
 	{
@@ -239,8 +243,17 @@ function Domnation(mapElement)
 				}
 			});
 		}
-		source = null;
+        
+        lastPos[currentPlayer] = source;
 		currentPlayer = currentPlayer === BROWN_ARMY ? GREEN_ARMY : BROWN_ARMY;
+        
+        var pos = lastPos[currentPlayer];
+        if (pos && $(pos).data().owner == currentPlayer) {
+            source = pos;
+        } else {
+            source = null;
+        }
+        
 		refresh();
 	};
 	
