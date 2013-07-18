@@ -21,10 +21,12 @@ function Domnation(mapElement)
     var KEY_RIGHT = 39;
     var KEY_DOWN = 40;
     var KEY_LEFT = 37;
+    var KEY_CACHE_TIMEOUT = 200;
 	
     var source = null;
 	var currentPlayer = null;
 	var customMap = null;
+    var keys = [];
     var lastPos = {
         BROWN_ARMY:  null,
         GREEN_ARMY: null
@@ -64,23 +66,23 @@ function Domnation(mapElement)
 		var row = 1;
 		for (var i = 0, j = map.length; i < j; i++) {
 			switch (map[i]) {
-			case "B": case "b":
-				mapHtml += createBlock(column, row, BROWN_ARMY, 3, 1);
-				break;
-			case "G": case "g":
-				mapHtml += createBlock(column, row, GREEN_ARMY, 3, 1);
-				break;
-			case "0": case "1": case "2": case "3":
-				mapHtml += createBlock(column, row, VACANT, 0, map[i]);
-				break;
-			case ".":
-				mapHtml += createBlock(column, row, BLOCKED, 0, 0);
-				break;
-			case "\n":
-				mapHtml += "<br />";
-				row++;
-				column = 0;
-				break;
+                case "B": case "b":
+                    mapHtml += createBlock(column, row, BROWN_ARMY, 3, 1);
+                    break;
+                case "G": case "g":
+                    mapHtml += createBlock(column, row, GREEN_ARMY, 3, 1);
+                    break;
+                case "0": case "1": case "2": case "3":
+                    mapHtml += createBlock(column, row, VACANT, 0, map[i]);
+                    break;
+                case ".":
+                    mapHtml += createBlock(column, row, BLOCKED, 0, 0);
+                    break;
+                case "\n":
+                    mapHtml += "<br />";
+                    row++;
+                    column = 0;
+                    break;
 			}
 			column++;
 		}
@@ -100,32 +102,38 @@ function Domnation(mapElement)
         
         $(document).keydown(function(e) {
             console.log(e.which);
-            if (source) {
+            if (source && [KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT].indexOf(e.which) !== -1) {
+                e.preventDefault();
+                keys.push(e.which);
+            } else {
+                keys.length = 0;
+            }
+        });
+        
+        function processKey()
+        { 
+            if (keys.length) {
+                var vertical = 0;
+                var horizontal = 0;
                 var sourceData = $(source).data();
-                $target = null;
-                switch (e.which) {
-                case KEY_UP:
-                    e.preventDefault();
-                    $target = getPos(sourceData.i, sourceData.j - 1);
-                    break;
-                case KEY_RIGHT:
-                    e.preventDefault();
-                    $target = getPos(sourceData.i + 1, sourceData.j);
-                    break;
-                case KEY_DOWN:
-                    e.preventDefault();
-                    $target = getPos(sourceData.i, sourceData.j + 1);
-                    break;
-                case KEY_LEFT:
-                    e.preventDefault();
-                    $target = getPos(sourceData.i - 1, sourceData.j);
-                    break;
+                var key = keys.shift();
+                while (key) {
+                    switch (key) {
+                        case KEY_UP: vertical = -1; break;
+                        case KEY_RIGHT: horizontal = 1; break;
+                        case KEY_DOWN: vertical = 1; break;
+                        case KEY_LEFT: horizontal = -1; break;
+                    }
+                    key = keys.shift();
                 }
+                var $target = getPos(sourceData.i + horizontal, sourceData.j + vertical);
                 if ($target) {
                     $target.click();
                 }
             }
-        });
+            setTimeout(processKey, KEY_CACHE_TIMEOUT);
+        }
+        setTimeout(processKey, KEY_CACHE_TIMEOUT);
 		
 		refresh();
 	}
@@ -155,21 +163,21 @@ function Domnation(mapElement)
 			}
 			
 			switch (data.owner) {
-			case BLOCKED:
-				$this.css("background", "url(blocked.png)");
-				break;
-			case VACANT:
-				$this.css("background", "url(vacant.png)");
-				data.army = 0;
-				break;
-			case BROWN_ARMY:
-				$this.css("background", "url(brown.gif)");
-				hasBrownArmy = true;
-				break;
-			case GREEN_ARMY:
-				$this.css("background", "url(green.gif)");
-				hasGreenArmy = true;
-				break;
+                case BLOCKED:
+                    $this.css("background", "url(blocked.png)");
+                    break;
+                case VACANT:
+                    $this.css("background", "url(vacant.png)");
+                    data.army = 0;
+                    break;
+                case BROWN_ARMY:
+                    $this.css("background", "url(brown.gif)");
+                    hasBrownArmy = true;
+                    break;
+                case GREEN_ARMY:
+                    $this.css("background", "url(green.gif)");
+                    hasGreenArmy = true;
+                    break;
 			}
 
 			if (data.army > 1) {
