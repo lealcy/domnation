@@ -2,21 +2,27 @@ function Domnation(mapElement)
 {
 	var domnation = {};
 
-	var MAP = 	"..3.....3..\n" +
-                "...0...0...\n" +
-                "..1111111..\n" +
-                ".11.111.11.\n" +
-                "11111111111\n" +
-                "1.1111111.1\n" +
-                "B.0.....0.G\n" +
-                "...22.22...";
+	var DEFAULT_MAP =
+        "..3.....3..\n" +
+        "...0...0...\n" +
+        "..1111111..\n" +
+        ".11.111.11.\n" +
+        "11111111111\n" +
+        "1.1111111.1\n" +
+        "B.0.....0.G\n" +
+        "...22.22...";
 
     var INVALID = -1;
 	var VACANT = 0;
 	var BROWN_ARMY = 1;
 	var GREEN_ARMY = 2;
 	var BLOCKED = 99;
-	var source = null;
+    var KEY_UP = 38;
+    var KEY_RIGHT = 39;
+    var KEY_DOWN = 40;
+    var KEY_LEFT = 37;
+	
+    var source = null;
 	var currentPlayer = null;
 	var customMap = null;
     var lastPos = {
@@ -52,7 +58,7 @@ function Domnation(mapElement)
 
 	function setUp()
 	{
-		var map = customMap ? customMap : MAP;
+		var map = customMap ? customMap : DEFAULT_MAP;
 		var mapHtml = "";
 		var column = 1;
 		var row = 1;
@@ -90,6 +96,36 @@ function Domnation(mapElement)
 			"vertical-align": "top",
 			"background-color": "transparent"
 		});
+        
+        
+        $(document).keydown(function(e) {
+            console.log(e.which);
+            if (source) {
+                var sourceData = $(source).data();
+                $target = null;
+                switch (e.which) {
+                case KEY_UP:
+                    e.preventDefault();
+                    $target = getPos(sourceData.i, sourceData.j - 1);
+                    break;
+                case KEY_RIGHT:
+                    e.preventDefault();
+                    $target = getPos(sourceData.i + 1, sourceData.j);
+                    break;
+                case KEY_DOWN:
+                    e.preventDefault();
+                    $target = getPos(sourceData.i, sourceData.j + 1);
+                    break;
+                case KEY_LEFT:
+                    e.preventDefault();
+                    $target = getPos(sourceData.i - 1, sourceData.j);
+                    break;
+                }
+                if ($target) {
+                    $target.click();
+                }
+            }
+        });
 		
 		refresh();
 	}
@@ -110,7 +146,7 @@ function Domnation(mapElement)
 			"padding": "0px"
 		});
 		
-		$(mapElement).children(".pos").each(function(index) {
+		$(mapElement).children(".pos").each(function() {
 			var $this = $(this);
 			var data = $this.data();
 			//console.log("-- refresh on: " + data.i + ", " + data.j + ", owner = " + data.owner + " --");
@@ -250,17 +286,13 @@ function Domnation(mapElement)
 		currentPlayer = currentPlayer === BROWN_ARMY ? GREEN_ARMY : BROWN_ARMY;
         
         var pos = lastPos[currentPlayer];
-        if (pos && $(pos).data().owner == currentPlayer) {
-            source = pos;
-        } else {
-            source = null;
-        }
+        source = pos && $(pos).data().owner === currentPlayer ? pos : null;
         
 		refresh();
 	};
 	
 	domnation.getMap = function(){
-		return customMap ? customMap : MAP;
+		return customMap ? customMap : DEFAULT_MAP;
 	};
 	
 	domnation.setCustomMap = function(map) {
