@@ -1,39 +1,39 @@
 
 <html><head><title>Domnation</title>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script src="domnation.js"></script>
-</head><body>
-<h1>Domnation 1.5.3(beta) by Lealcy Belegante Junior</h1>
-<h4><a href="#" id="customize">Create custom map</a></h4>
-<div id="mapEditor" style="display: none">
-	<p>Valid chars: (B): Brown Army start position, (G): Green Army start position,
-		(0-3): vacant position with 0-3 bonus army increment, (.) blocked location.</p>
-	<textarea id="mapText" rows="12"></textarea><br>
-	<button id="runMap">Run the new map</button>
-</div>
-<h2>Current Player: <strong><span id="cPlayer">Javascript not enabled.</span></strong></h2>
-<h3><a href="#" id="endTurn"><strong>End turn</strong> (click here if you have no moves left.)</a></h3>
-<div id="map"></div>
-<script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script src="domnation.js"></script>
+    </head><body>
+        <h1>Domnation 1.5.3(beta) by Lealcy Belegante Junior</h1>
+        <h4><a href="#" id="customize">Create custom map</a></h4>
+        <div id="mapEditor" style="display: none">
+            <p>Valid chars: (B): Brown Army start position, (G): Green Army start position,
+                (0-3): vacant position with 0-3 bonus army increment, (.) blocked location.</p>
+            <textarea id="mapText" rows="12"></textarea><br>
+            <button id="runMap">Run the new map</button>
+        </div>
+        <h2>Current Player: <strong><span id="cPlayer">Javascript not enabled.</span></strong></h2>
+        <h3><a href="#" id="endTurn"><strong>End turn</strong> (click here if you have no moves left.)</a></h3>
+        <div id="map"></div>
+        <script>
 
-var domnation = Domnation("#map");
+            var domnation = Domnation("#map");
 
-$("#endTurn").click(function() {
-	domnation.endTurn();
-	$("#cPlayer").html(domnation.getCurrentPlayerName());
-});
+            $("#endTurn").click(function() {
+                domnation.endTurn();
+                $("#cPlayer").html(domnation.getCurrentPlayerName());
+            });
 
-$("#customize").click(function() {
-	$("#mapText").val(domnation.getMap());
-	$("#mapEditor").show();
-});
+            $("#customize").click(function() {
+                $("#mapText").val(domnation.getMap());
+                $("#mapEditor").show();
+            });
 
-$("#runMap").click(function() {
-	$("#mapEditor").hide();
-	domnation.setCustomMap($("#mapText").val());
-	$("#cPlayer").html(domnation.getCurrentPlayerName());
-});
+            $("#runMap").click(function() {
+                $("#mapEditor").hide();
+                domnation.setCustomMap($("#mapText").val());
+                $("#cPlayer").html(domnation.getCurrentPlayerName());
+            });
 
-$("#cPlayer").html(domnation.getCurrentPlayerName());
-</script>
-</body></html>
+            $("#cPlayer").html(domnation.getCurrentPlayerName());
+        </script>
+    </body></html>
