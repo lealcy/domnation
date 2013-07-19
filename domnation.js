@@ -1,14 +1,12 @@
 function Domnation(mapElement)
 {
-    var domnation = {};
-
     var DEFAULT_MAP =
             "..3.....3..\n" +
             "...0...0...\n" +
-            "..1111111..\n" +
-            ".11.111.11.\n" +
-            "11111111111\n" +
-            "1.1111111.1\n" +
+            "..0000000..\n" +
+            ".10.101.01.\n" +
+            "00000000000\n" +
+            "0.0001000.0\n" +
             "B.0.....0.G\n" +
             "...22.22...";
 
@@ -55,7 +53,7 @@ function Domnation(mapElement)
         return '<div class="pos" id="b_' + column + '_' + row +
                 '" data-owner="' + owner + '" data-army="' + army + '" data-i="' + column +
                 '" data-j="' + row + '" data-inc="' + bonus +
-                '"><span class="armies"></span></div>';
+                '"><div class="armies"></div><div class="bonus"></div></div>';
     }
 
     function setUp()
@@ -101,7 +99,8 @@ function Domnation(mapElement)
             "font-family": "monospace",
             "text-align": "right",
             "vertical-align": "top",
-            "background-color": "transparent"
+            "background-color": "transparent",
+            "text-shadow": "-1px -1px 1px white, 1px -1px 1px white,-1px 1px 1px white,1px 1px 1px white"
         });
 
 
@@ -194,10 +193,12 @@ function Domnation(mapElement)
             }
 
             if (data.army > 1) {
-                $this.children(".armies").html(data.army).css("background-color", "#5BA426");
+                $this.children(".armies").html(data.army);
             } else {
-                $this.children(".armies").html("&nbsp;").css("background-color", "transparent");
+                $this.children(".armies").html("&nbsp;");
             }
+
+            $this.children(".bonus").html('<img src="star' + data.inc + '.png">');
         });
 
         if (source) {
@@ -293,39 +294,38 @@ function Domnation(mapElement)
         refresh();
     });
 
-    domnation.endTurn = function() {
-        if (currentPlayer === GREEN_ARMY) {
-            $(mapElement).children(".pos").each(function() {
-                var data = $(this).data();
-                if (data.owner === BROWN_ARMY || data.owner === GREEN_ARMY) {
-                    data.army += data.inc;
-                }
-            });
+    var returnObj = {
+        endTurn: function() {
+            if (currentPlayer === GREEN_ARMY) {
+                $(mapElement).children(".pos").each(function() {
+                    var data = $(this).data();
+                    if (data.owner === BROWN_ARMY || data.owner === GREEN_ARMY) {
+                        data.army += data.inc;
+                    }
+                });
+            }
+
+            lastPos[currentPlayer] = source;
+            currentPlayer = currentPlayer === BROWN_ARMY ? GREEN_ARMY : BROWN_ARMY;
+
+            var pos = lastPos[currentPlayer];
+            source = pos && $(pos).data().owner === currentPlayer ? pos : null;
+
+            refresh();
+        },
+        getMap: function() {
+            return customMap ? customMap : DEFAULT_MAP;
+        },
+        setCustomMap: function(map) {
+            customMap = map;
+            setUp();
+        },
+        getCurrentPlayerName: function() {
+            return currentPlayer === BROWN_ARMY ? "Brown Army" : "Green Army";
         }
-
-        lastPos[currentPlayer] = source;
-        currentPlayer = currentPlayer === BROWN_ARMY ? GREEN_ARMY : BROWN_ARMY;
-
-        var pos = lastPos[currentPlayer];
-        source = pos && $(pos).data().owner === currentPlayer ? pos : null;
-
-        refresh();
-    };
-
-    domnation.getMap = function() {
-        return customMap ? customMap : DEFAULT_MAP;
-    };
-
-    domnation.setCustomMap = function(map) {
-        customMap = map;
-        setUp();
-    };
-
-    domnation.getCurrentPlayerName = function() {
-        return currentPlayer === BROWN_ARMY ? "Brown Army" : "Green Army";
     };
 
     setUp();
 
-    return domnation;
+    return returnObj;
 }
